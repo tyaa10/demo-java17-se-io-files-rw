@@ -1,6 +1,8 @@
 package org.tyaa.demo.java.se.io;
 
 import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Scanner;
 
 public class Main {
@@ -9,7 +11,7 @@ public class Main {
     private static final Integer WRITE_OPTION = 2;
     private static final Integer READ_OPTION = 3;
     private static final Integer EXIT_OPTION = 4;
-    private static final File FILES_DIRECTORY = new File(String.format("out%sfiles", File.separator));
+    public static final File FILES_DIRECTORY = new File(String.format("out%sfiles", File.separator));
 
     public static void main(String[] args) {
         Integer option;
@@ -29,33 +31,42 @@ public class Main {
             if (option.equals(CREATE_FILE_OPTION)) {
                 System.out.println("Введите имя для файла и нажмите Ввод: ");
                 try {
+                    OutSwitch.switchToFile();
                     if (createFile(sc.nextLine())) {
-                        System.out.println("Файл создан.");
+                        System.out.println(stringToLog("Файл создан."));
                     } else {
-                        System.out.println("Ошибка создания файла.");
+                        System.out.println(stringToLog("Ошибка создания файла."));
                     }
                 } catch (IOException e) {
-                    System.out.println("Ошибка ввода-вывода при создании файла.");
+                    System.out.println(stringToLog("Ошибка ввода-вывода при создании файла."));
+                } finally {
+                    OutSwitch.switchToConsole();
                 }
             } else if (option.equals(WRITE_OPTION)) {
                 System.out.println("Введите название файла для записи: ");
                 String fileName = sc.nextLine();
                 System.out.println("Введите текст для записи и нажмите Ввод: ");
                 try {
+                    OutSwitch.switchToFile();
                     writeToFile(fileName, sc.nextLine());
-                    System.out.println("Запись в файл выполнена.");
+                    System.out.println(stringToLog("Запись в файл выполнена."));
                 } catch (IOException e) {
-                    System.out.println("Ошибка ввода-вывода при записи в файл.");
+                    System.out.println(stringToLog("Ошибка ввода-вывода при записи в файл."));
+                } finally {
+                    OutSwitch.switchToConsole();
                 }
             } else if (option.equals(READ_OPTION)) {
                 System.out.println("Введите название файла для чтения: ");
                 try {
+                    OutSwitch.switchToFile();
                     String text = readFromFile(sc.nextLine());
-                    System.out.println("Чтение из файла выполнено: " + text);
+                    System.out.println(stringToLog("Чтение из файла выполнено: " + text));
                 } catch (IOException e) {
-                    System.out.println("Ошибка ввода-вывода при записи в файл.");
+                    System.out.println(stringToLog("Ошибка ввода-вывода при записи в файл."));
+                } finally {
+                    OutSwitch.switchToConsole();
                 }
-            }  else if (option.equals(EXIT_OPTION)) {
+            } else if (option.equals(EXIT_OPTION)) {
                 break;
             }
         } while (true);
@@ -94,5 +105,13 @@ public class Main {
             return FILES_DIRECTORY.mkdirs();
         }
         return true;
+    }
+
+    private static String stringToLog (String text) {
+        return String.format(
+            "%s - %s",
+            text,
+            new SimpleDateFormat("dd-MM-yyyy hh:mm:ss").format(new Date())
+        );
     }
 }
